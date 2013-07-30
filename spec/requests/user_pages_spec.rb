@@ -136,4 +136,21 @@ describe "User pages" do
       specify { user.reload.email.should == new_email }
     end
   end
+
+  describe "profile page" do
+    let(:user) { FactoryGirl.create(:user) }
+    let!(:t1) { FactoryGirl.create(:task, user: user, content: "Foo") }
+    let!(:t2) { FactoryGirl.create(:task, user: user, content: "Bar") }
+
+    before { visit user_path(user) }
+
+    it { should have_selector('h1',    text: user.name) }
+    it { should have_selector('title', text: user.name) }
+
+    describe "tasks" do
+      it { should have_content(t1.content) }
+      it { should have_content(t2.content) }
+      it { should have_content(user.tasks.count) }
+    end
+  end
 end
