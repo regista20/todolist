@@ -2,11 +2,14 @@ class TasksController < ApplicationController
   before_filter :signed_in_user, only: [:create, :destroy]
   before_filter :correct_user,   only: :destroy
 
+  respond_to :html, :js
+
   def create
     @task = current_user.tasks.build(params[:task])
+    @feed_items = current_user.feed.paginate(page: params[:page])
     if @task.save
-      flash[:success] = "Micropost created!"
-      redirect_to root_url
+      flash[:success] = "Task created!"
+      respond_with root_url
     else
       @feed_items = []
       render 'static_pages/home'
@@ -15,7 +18,9 @@ class TasksController < ApplicationController
 
   def destroy
     @task.destroy
-    redirect_to root_url
+    @feed_items = current_user.feed.paginate(page: params[:page])
+    flash[:success] = "Task created!"
+    respond_with root_url
   end
 
   private
